@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10x10 Grid Checkerboard</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* 防止捲軸出現 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 確保 body 佔滿整個視窗高度 */
+            background-color: #eee; /* 如果 canvas 沒有完全覆蓋，顯示淺灰色背景 */
+            flex-direction: column; /* 按鈕和 canvas 垂直堆疊 */
+        }
+        canvas {
+            display: block; /* 移除 canvas 下方的額外空間 */
+            /* 尺寸將由 JavaScript 處理 */
+        }
+        #fullscreenButton {
+            position: fixed; /* 固定位置 */
+            top: 20px;
+            left: 180px; /* Adjusted position to the right of backButton */
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            z-index: 1000;
+            display: block; /* 初始顯示按鈕 */
+        }
+        #backButton {
+            position: fixed; /* 固定位置 */
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            z-index: 1000; /* 確保按鈕在最上層 */
+            transition: background-color 0.3s ease;
+            display: block; /* 預設顯示 */
+        }
+        #backButton:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        :fullscreen {
+            cursor: none;
+        }
+        :-webkit-full-screen {
+            cursor: none;
+        }
+        :-moz-full-screen {
+            cursor: none;
+        }
+        :-ms-fullscreen {
+            cursor: none;
+        }
+        :fullscreen #fullscreenButton,
+        :fullscreen #backButton {
+            display: none !important;
+        }
+        :-webkit-full-screen #fullscreenButton, :-webkit-full-screen #backButton { display: none !important; }
+        :-moz-full-screen #fullscreenButton, :-moz-full-screen #backButton { display: none !important; }
+        :-ms-fullscreen #fullscreenButton, :-ms-fullscreen #backButton { display: none !important; }
+    </style>
+</head>
+<body>
+    <button id="backButton">← 返回主頁</button> <button id="fullscreenButton">點擊這裡進入全螢幕</button>
+    <canvas id="checkerboardCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('checkerboardCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 【修改部分】: 繪圖邏輯已更新
+        function drawCheckerboard() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            canvas.width = windowWidth;
+            canvas.height = windowHeight;
+
+            // 固定為 10x10 的網格
+            const numCols = 10;
+            const numRows = 10;
+
+            // 根據視窗大小計算每個方格的寬度和高度
+            const squareWidth = windowWidth / numCols;
+            const squareHeight = windowHeight / numRows;
+
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
+                    // 根據格子位置決定顏色
+                    const color = (row + col) % 2 === 0 ? 'black' : 'white';
+                    ctx.fillStyle = color;
+                    // 使用計算出的方格寬高來繪製
+                    ctx.fillRect(col * squareWidth, row * squareHeight, squareWidth, squareHeight);
+                }
+            }
+        }
+
+        function requestFullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+                document.documentElement.msRequestFullscreen();
+            }
+        }
+
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const backButton = document.getElementById('backButton');
+
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', requestFullscreen);
+        }
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        drawCheckerboard();
+        window.addEventListener('resize', drawCheckerboard);
+
+        // 可選：根據全螢幕狀態隱藏/顯示按鈕
+        function handleFullscreenChange() {
+             const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (isFullscreen) {
+                if (fullscreenButton) fullscreenButton.style.display = 'none';
+                if (backButton) backButton.style.display = 'none';
+            } else {
+                if (fullscreenButton) fullscreenButton.style.display = 'block';
+                if (backButton) backButton.style.display = 'block';
+            }
+            drawCheckerboard(); // 退出全螢幕時可能改變尺寸，重新繪製
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+    </script>
+</body>
+</html>

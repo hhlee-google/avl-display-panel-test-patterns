@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1x1 Physical Pixel Magenta and Green Checkerboard</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #eee;
+            flex-direction: column;
+        }
+        canvas {
+            display: block;
+            /* * 尺寸將完全由 JavaScript 控制，
+             * 包括 style.width 和 style.height，以確保精確對應 
+            */
+        }
+        #fullscreenButton {
+            position: fixed;
+            top: 20px;
+            left: 180px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            z-index: 1000;
+            display: block;
+        }
+        #backButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+            display: block;
+        }
+        #backButton:hover {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+		  
+        :fullscreen { cursor: none; }
+        :-webkit-full-screen { cursor: none; }
+        :-moz-full-screen { cursor: none; }
+        :-ms-fullscreen { cursor: none; }
+		  
+        :fullscreen #fullscreenButton,
+        :fullscreen #backButton { display: none !important; }
+        :-webkit-full-screen #fullscreenButton, :-webkit-full-screen #backButton { display: none !important; }
+        :-moz-full-screen #fullscreenButton, :-moz-full-screen #backButton { display: none !important; }
+        :-ms-fullscreen #fullscreenButton, :-ms-fullscreen #backButton { display: none !important; }
+    </style>
+</head>
+<body>
+    <button id="backButton">← 返回主頁</button> <button id="fullscreenButton">點擊這裡進入全螢幕</button>
+    <canvas id="checkerboardCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('checkerboardCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 【修改部分】: 繪圖邏輯已完全更新
+        function drawCheckerboard() {
+            // 1. 取得設備像素比 (DPR)，忽略系統縮放的關鍵
+            const dpr = window.devicePixelRatio || 1;
+
+            // 2. 取得視窗的邏輯尺寸 (CSS 像素)
+            const logicalWidth = window.innerWidth;
+            const logicalHeight = window.innerHeight;
+
+            // 3. 設定 Canvas 的內部繪圖緩衝區大小為物理像素尺寸
+            canvas.width = logicalWidth * dpr;
+            canvas.height = logicalHeight * dpr;
+
+            // 4. 使用 CSS 設定 Canvas 的顯示尺寸為邏輯尺寸
+            // 這會讓高解析度的 Canvas 縮小到正確的顯示範圍
+            canvas.style.width = `${logicalWidth}px`;
+            canvas.style.height = `${logicalHeight}px`;
+
+            // 5. 現在，canvas.width 和 canvas.height 代表了可用的物理像素數量
+            const numCols = canvas.width;
+            const numRows = canvas.height;
+            const pixelSize = 1; // 我們要畫的單位就是 1 物理像素
+
+            for (let row = 0; row < numRows; row++) {
+                for (let col = 0; col < numCols; col++) {
+                    const color = (row + col) % 2 === 0 ? '#FF00FF' : '#00FF00'; // 洋紅色 vs 綠色
+                    ctx.fillStyle = color;
+                    // 在高解析度的畫布上繪製 1x1 的方格，這就是 1x1 的物理像素
+                    ctx.fillRect(col, row, pixelSize, pixelSize);
+                }
+            }
+        }
+
+        function requestFullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+                document.documentElement.msRequestFullscreen();
+            }
+        }
+
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const backButton = document.getElementById('backButton');
+
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', requestFullscreen);
+        }
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        drawCheckerboard();
+        window.addEventListener('resize', drawCheckerboard);
+
+        function handleFullscreenChange() {
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            if (isFullscreen) {
+                if (fullscreenButton) fullscreenButton.style.display = 'none';
+                if (backButton) backButton.style.display = 'none';
+            } else {
+                if (fullscreenButton) fullscreenButton.style.display = 'block';
+                if (backButton) backButton.style.display = 'block';
+            }
+            drawCheckerboard();
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('msfullscreenchange', handleFullscreenChange);
+    </script>
+</body>
+</html>

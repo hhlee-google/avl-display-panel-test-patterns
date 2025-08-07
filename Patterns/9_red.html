@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pure Red Screen</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden; /* 防止捲軸出現 */
+            background-color: red; /* 將背景色設定為紅色 */
+            display: flex; /* 為了讓按鈕固定位置，雖然內容是全紅，但保持結構一致 */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* 確保 body 佔滿整個視窗高度 */
+        }
+        /* Style for the Back to Index button */
+        #backButton {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.3); /* 半透明白色，以便在紅背景上可見 */
+            color: black; /* 黑色文字 */
+            border: none;
+            border-radius: 5px;
+            z-index: 1000; /* 確保它在最上層 */
+            transition: background-color 0.3s ease;
+            display: block; /* 預設顯示 */
+        }
+        #backButton:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Style for the Full Screen button */
+        #fullscreenButton {
+            position: fixed; /* 固定位置 */
+            top: 20px;
+            left: 180px; /* 位置調整在返回按鈕右側 */
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            z-index: 1000; /* 確保它在最上層 */
+            display: block; /* 預設顯示 */
+        }
+        #fullscreenButton:hover {
+            background-color: #0056b3;
+        }
+        /* **** 新增的 CSS 規則：全螢幕時隱藏游標 **** */
+        :fullscreen {
+            cursor: none;
+        }
+        :-webkit-full-screen {
+            cursor: none;
+        }
+        :-moz-full-screen {
+            cursor: none;
+        }
+        :-ms-fullscreen {
+            cursor: none;
+        }
+        /* **** 新增的 CSS 規則結束 **** */
+        /* 全螢幕時隱藏所有按鈕 */
+        :fullscreen #backButton,
+        :fullscreen #fullscreenButton {
+            display: none !important;
+        }
+        /* 各瀏覽器全螢幕前綴 */
+        :-webkit-full-screen #backButton, :-webkit-full-screen #fullscreenButton { display: none !important; }
+        :-moz-full-screen #backButton, :-moz-full-screen #fullscreenButton { display: none !important; }
+        :-ms-fullscreen #backButton, :-ms-fullscreen #fullscreenButton { display: none !important; }
+    </style>
+</head>
+<body>
+    <button id="backButton">← 返回主頁</button>
+    <button id="fullscreenButton">點擊這裡進入全螢幕</button>
+
+    <script>
+        // 請求全螢幕的函式
+        function requestFullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+                document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                document.documentElement.webkitRequestFullscreen();
+            } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+                document.documentElement.msRequestFullscreen();
+            }
+        }
+
+        // 取得按鈕元素
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const backButton = document.getElementById('backButton');
+
+        // 全螢幕按鈕事件監聽器
+        if (fullscreenButton) {
+            fullscreenButton.addEventListener('click', requestFullscreen);
+        }
+
+        // 返回按鈕事件監聽器
+        if (backButton) {
+            backButton.addEventListener('click', () => {
+                window.location.href = '../index.html'; // 導航回 index.html
+            });
+        }
+
+        // 處理全螢幕狀態變化，隱藏或顯示按鈕
+        function handleFullscreenChange() {
+            if (document.fullscreenElement || document.webkitFullscreenElement ||
+                document.mozFullScreenElement || document.msFullscreenElement) {
+                // 在全螢幕模式下，隱藏兩個按鈕
+                if (fullscreenButton) fullscreenButton.style.display = 'none';
+                if (backButton) backButton.style.display = 'none';
+            } else {
+                // 不在全螢幕模式下，顯示兩個按鈕
+                if (fullscreenButton) fullscreenButton.style.display = 'block';
+                if (backButton) backButton.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    </script>
+</body>
+</html>
