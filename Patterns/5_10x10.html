@@ -21,24 +21,25 @@ limitations under the License.
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>10x10 Grid Checkerboard</title>
     <style>
-        body {
+        /* 【修改部分】: html 和 body 佔滿整個螢幕 */
+        html, body {
             margin: 0;
-            overflow: hidden; /* 防止捲軸出現 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh; /* 確保 body 佔滿整個視窗高度 */
-            background-color: #eee; /* 如果 canvas 沒有完全覆蓋，顯示淺灰色背景 */
-            flex-direction: column; /* 按鈕和 canvas 垂直堆疊 */
+            padding: 0;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: #eee;
         }
         canvas {
-            display: block; /* 移除 canvas 下方的額外空間 */
-            /* 尺寸將由 JavaScript 處理 */
+            display: block;
+            /* 【修改部分】: 讓 Canvas 尺寸由 CSS 控制，填滿父層 */
+            width: 100%;
+            height: 100%;
         }
         #fullscreenButton {
-            position: fixed; /* 固定位置 */
+            position: fixed;
             top: 20px;
-            left: 180px; /* Adjusted position to the right of backButton */
+            left: 180px;
             padding: 10px 20px;
             font-size: 18px;
             cursor: pointer;
@@ -47,22 +48,22 @@ limitations under the License.
             border: none;
             border-radius: 5px;
             z-index: 1000;
-            display: block; /* 初始顯示按鈕 */
+            display: block;
         }
         #backButton {
-            position: fixed; /* 固定位置 */
+            position: fixed;
             top: 20px;
             left: 20px;
             padding: 10px 15px;
             font-size: 16px;
             cursor: pointer;
-            background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
             border: none;
             border-radius: 5px;
-            z-index: 1000; /* 確保按鈕在最上層 */
+            z-index: 1000;
             transition: background-color 0.3s ease;
-            display: block; /* 預設顯示 */
+            display: block;
         }
         #backButton:hover {
             background-color: rgba(0, 0, 0, 0.7);
@@ -89,35 +90,33 @@ limitations under the License.
     </style>
 </head>
 <body>
-    <button id="backButton">← 返回主頁</button> <button id="fullscreenButton">點擊這裡進入全螢幕</button>
+    <button id="backButton">← 返回主頁</button>
+    <button id="fullscreenButton">點擊這裡進入全螢幕</button>
     <canvas id="checkerboardCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('checkerboardCanvas');
         const ctx = canvas.getContext('2d');
 
-        // 【修改部分】: 繪圖邏輯已更新
         function drawCheckerboard() {
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
+            // 【修改部分】: 關鍵修正！
+            // 讓 Canvas 的內部解析度（像素數量）與其在螢幕上的顯示尺寸（CSS尺寸）保持一致
+            // 這能確保圖案清晰，並正確填滿由 CSS 設定的 100% 空間
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
 
-            canvas.width = windowWidth;
-            canvas.height = windowHeight;
-
-            // 固定為 10x10 的網格
             const numCols = 10;
             const numRows = 10;
-
-            // 根據視窗大小計算每個方格的寬度和高度
-            const squareWidth = windowWidth / numCols;
-            const squareHeight = windowHeight / numRows;
+            
+            // 根據 Canvas 的實際繪圖尺寸計算方格大小
+            const squareWidth = canvas.width / numCols;
+            const squareHeight = canvas.height / numRows;
 
             for (let row = 0; row < numRows; row++) {
                 for (let col = 0; col < numCols; col++) {
-                    // 根據格子位置決定顏色
                     const color = (row + col) % 2 === 0 ? 'black' : 'white';
                     ctx.fillStyle = color;
-                    // 使用計算出的方格寬高來繪製
                     ctx.fillRect(col * squareWidth, row * squareHeight, squareWidth, squareHeight);
                 }
             }
@@ -150,7 +149,6 @@ limitations under the License.
         drawCheckerboard();
         window.addEventListener('resize', drawCheckerboard);
 
-        // 可選：根據全螢幕狀態隱藏/顯示按鈕
         function handleFullscreenChange() {
              const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
             if (isFullscreen) {
@@ -160,14 +158,14 @@ limitations under the License.
                 if (fullscreenButton) fullscreenButton.style.display = 'block';
                 if (backButton) backButton.style.display = 'block';
             }
-            drawCheckerboard(); // 退出全螢幕時可能改變尺寸，重新繪製
+            // 【修改部分】: 稍微延遲重繪，給瀏覽器時間更新尺寸
+            setTimeout(drawCheckerboard, 100);
         }
 
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
         document.addEventListener('msfullscreenchange', handleFullscreenChange);
-
     </script>
 </body>
 </html>
