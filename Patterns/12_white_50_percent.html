@@ -15,22 +15,38 @@ limitations under the License.
 -->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pure Red Screen</title>
+    <title>中央白色方塊</title>
     <style>
-        body {
+        /* 全局設定 */
+        html, body {
             margin: 0;
-            overflow: hidden; /* 防止捲軸出現 */
-            background-color: red; /* 將背景色設定為紅色 */
-            display: flex; /* 為了讓按鈕固定位置，雖然內容是全紅，但保持結構一致 */
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* 外部容器使用 Flexbox 置中白色方塊 */
+        body {
+            display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* 確保 body 佔滿整個視窗高度 */
         }
-        /* Style for the Back to Index button */
+
+        /* 中央白色方塊 */
+        .centered-box {
+            background-color: white;
+            width: 70.71vw;
+            height: 70.71vh;
+        }
+        
+        /* 返回主頁按鈕的樣式 */
         #backButton {
             position: fixed;
             top: 20px;
@@ -38,36 +54,38 @@ limitations under the License.
             padding: 10px 15px;
             font-size: 16px;
             cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.3); /* 半透明白色，以便在紅背景上可見 */
-            color: black; /* 黑色文字 */
-            border: none;
+            /* 使用半透明灰色，確保在黑白背景下都可見 */
+            background-color: rgba(128, 128, 128, 0.5);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 5px;
-            z-index: 1000; /* 確保它在最上層 */
+            z-index: 1000;
             transition: background-color 0.3s ease;
-            display: block; /* 預設顯示 */
+            display: block;
         }
         #backButton:hover {
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(128, 128, 128, 0.8);
         }
 
-        /* Style for the Full Screen button */
+        /* 全螢幕按鈕的樣式 */
         #fullscreenButton {
-            position: fixed; /* 固定位置 */
+            position: fixed;
             top: 20px;
-            left: 180px; /* 位置調整在返回按鈕右側 */
+            left: 150px; /* 調整位置以避免與返回按鈕重疊 */
             padding: 10px 20px;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
-            z-index: 1000; /* 確保它在最上層 */
-            display: block; /* 預設顯示 */
+            z-index: 1000;
+            display: block;
         }
         #fullscreenButton:hover {
             background-color: #0056b3;
         }
+
         /* **** 新增的 CSS 規則：全螢幕時隱藏游標 **** */
         :fullscreen {
             cursor: none;
@@ -82,21 +100,28 @@ limitations under the License.
             cursor: none;
         }
         /* **** 新增的 CSS 規則結束 **** */
+
         /* 全螢幕時隱藏所有按鈕 */
         :fullscreen #backButton,
         :fullscreen #fullscreenButton {
             display: none !important;
         }
-        /* 各瀏覽器全螢幕前綴 */
         :-webkit-full-screen #backButton, :-webkit-full-screen #fullscreenButton { display: none !important; }
         :-moz-full-screen #backButton, :-moz-full-screen #fullscreenButton { display: none !important; }
         :-ms-fullscreen #backButton, :-ms-fullscreen #fullscreenButton { display: none !important; }
+
     </style>
 </head>
 <body>
+    
+    <!-- 新的按鈕 -->
     <button id="backButton">← 返回主頁</button>
     <button id="fullscreenButton">點擊這裡進入全螢幕</button>
 
+    <!-- 中央的白色方塊保持不變 -->
+    <div class="centered-box"></div>
+
+    <!-- 新的 JavaScript -->
     <script>
         // 請求全螢幕的函式
         function requestFullscreen() {
@@ -123,22 +148,19 @@ limitations under the License.
         // 返回按鈕事件監聽器
         if (backButton) {
             backButton.addEventListener('click', () => {
-                window.location.href = '../index.html'; // 導航回 index.html
+                // 主頁是上一層目錄的 index.html
+                window.location.href = '../index.html'; 
             });
         }
 
         // 處理全螢幕狀態變化，隱藏或顯示按鈕
         function handleFullscreenChange() {
-            if (document.fullscreenElement || document.webkitFullscreenElement ||
-                document.mozFullScreenElement || document.msFullscreenElement) {
-                // 在全螢幕模式下，隱藏兩個按鈕
-                if (fullscreenButton) fullscreenButton.style.display = 'none';
-                if (backButton) backButton.style.display = 'none';
-            } else {
-                // 不在全螢幕模式下，顯示兩個按鈕
-                if (fullscreenButton) fullscreenButton.style.display = 'block';
-                if (backButton) backButton.style.display = 'block';
-            }
+            const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement ||
+                                   document.mozFullScreenElement || document.msFullscreenElement;
+
+            const displayStyle = isInFullscreen ? 'none' : 'block';
+            if (fullscreenButton) fullscreenButton.style.display = displayStyle;
+            if (backButton) backButton.style.display = displayStyle;
         }
 
         document.addEventListener('fullscreenchange', handleFullscreenChange);
@@ -146,5 +168,6 @@ limitations under the License.
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
         document.addEventListener('MSFullscreenChange', handleFullscreenChange);
     </script>
+
 </body>
 </html>
