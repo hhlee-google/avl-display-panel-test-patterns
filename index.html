@@ -1,3 +1,19 @@
+<!--
+Copyright 2025 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    https://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,22 +26,41 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* 從頂部開始對齊 */
             min-height: 100vh;
             margin: 0;
+            padding-top: 40px; /* 增加頂部間距 */
             background-color: #f4f4f4;
             color: #333;
         }
         h1 {
             color: #0056b3;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        .main-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px; /* 左右兩個區塊的間距 */
+            width: 90%;
+            max-width: 900px;
+        }
+        .pattern-column {
+            flex: 1; /* 讓兩個區塊平分寬度 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
         }
         .link-container {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Adjust spacing between links */
-            width: 80%;
-            max-width: 400px;
+            gap: 15px; /* 按鈕之間的垂直間距 */
+            width: 100%;
         }
         .link-container a {
             display: block;
@@ -38,6 +73,7 @@
             font-size: 1.1em;
             transition: background-color 0.3s ease, transform 0.2s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-height: 1.5em; /* 確保空白按鈕有高度，方便點擊 */
         }
         .link-container a:hover {
             background-color: #0056b3;
@@ -53,17 +89,37 @@
 
     <h1>Select a test pattern</h1>
 
-    <div class="link-container">
-	<a href="Patterns/1_white.html">1 white</a>
-	<a href="Patterns/2_black.html">2 black</a>
-        <a href="Patterns/3_magenta_green_checker.html">3 magenta_green_checker</a>
-        <a href="Patterns/4_black_white_checker.html">4 black_white_checker</a>
-        <a href="Patterns/5_10x10.html">5 10x10</a>
-        <a href="Patterns/6_horizontal_stripes.html">6 horizontal_stripes</a>
-        <a href="Patterns/7_vertical_stripes.html">7 vertical_stripes</a>
-        <a href="Patterns/8_vertical_stripes_magenta_green.html">8 vertical_stripes_magenta_green</a>
-	<a href="Patterns/9_red.html">9 red</a>
+    <div class="main-container">
+        <!-- LCD 區塊 -->
+        <div class="pattern-column">
+            <h2>LCD</h2>
+            <div class="link-container">
+                <a href="Patterns/1_white.html">1. White</a>
+                <a href="Patterns/2_black.html">2. Black</a>
+                <a href="Patterns/9_red.html">3. Red</a>
+                <a href="Patterns/3_magenta_green_checker.html">4. Sub-pixel checker (M/G)</a>
+                <a href="Patterns/4_black_white_checker.html">5. Pixel checker (B/W)</a>
+                <a href="Patterns/5_10x10.html">6. 10x10 checker</a>
+                <a href="Patterns/6_horizontal_stripes.html">7. Horizontal stripe (1B1W)</a>
+                <a href="Patterns/7_vertical_stripes.html">8. Vertical stripe (1B1W)</a>
+                <a href="Patterns/8_vertical_stripes_magenta_green.html">9. Vertical stripe (1M1G)</a>
+            </div>
+        </div>
+
+        <!-- OLED 區塊 -->
+        <div class="pattern-column">
+            <h2>OLED</h2>
+            <div class="link-container">
+                <a href="Patterns/1_white.html"">1. White</a>
+                <a href="Patterns/2_black.html">2. Black</a>
+                <a href="Patterns/9_red.html">3. Red</a>
+                <a href="Patterns/10_green.html">4. Green</a>
+                <a href="Patterns/11_blue.html">5. Blue</a>
+                <a href="Patterns/12_white_50_percent.html">6. White (50% area)</a>
+            </div>
+        </div>
     </div>
 
 </body>
 </html>
+
